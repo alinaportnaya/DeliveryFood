@@ -10,7 +10,6 @@ const buttonCart = document.querySelector('.button-cart');
 
 let login = localStorage.getItem('user');
 
-// Функція для перевірки авторизації при завантаженні сторінки
 function checkAuth() {
     if (login) {
         authorized();
@@ -19,7 +18,6 @@ function checkAuth() {
     }
 }
 
-// Функція для авторизованого користувача
 function authorized() {
     buttonAuth.style.display = 'none';
     buttonOut.style.display = 'flex';
@@ -30,7 +28,6 @@ function authorized() {
     buttonOut.addEventListener('click', logOut);
 }
 
-// Функція для неавторизованого користувача
 function notAuthorized() {
     buttonAuth.style.display = 'flex';
     buttonOut.style.display = 'none';
@@ -41,27 +38,31 @@ function notAuthorized() {
     buttonAuth.addEventListener('click', openModal);
 }
 
-// Функція відкриття модального вікна
 function openModal() {
     modalAuth.classList.add('is-open');
-    loginInput.style.borderColor = ''; 
+    // Прибираємо смугу прокрутки при відкритті модального вікна
+    document.body.style.overflow = 'hidden';
+    // Скидаємо колір рамки при відкритті
+    loginInput.style.borderColor = '';
     passwordInput.style.borderColor = '';
 }
 
-// Функція закриття модального вікна
 function closeModal() {
     modalAuth.classList.remove('is-open');
-    logInForm.reset(); 
-    loginInput.style.borderColor = ''; 
+    // Відновлюємо смугу прокрутки при закритті модального вікна
+    document.body.style.overflow = '';
+    logInForm.reset();
+    // Скидаємо колір рамки при закритті
+    loginInput.style.borderColor = '';
     passwordInput.style.borderColor = '';
 }
 
-// Функція авторизації
 function logIn(event) {
     event.preventDefault();
     
     let isValid = true;
     
+    // Перевірка полів на заповненість
     if (!loginInput.value.trim()) {
         loginInput.style.borderColor = '#ff0000';
         isValid = false;
@@ -84,15 +85,24 @@ function logIn(event) {
     }
 }
 
-// Функція виходу
 function logOut() {
     login = null;
     localStorage.removeItem('user');
     notAuthorized();
 }
 
+// Закриття модального вікна при кліку поза ним
+function handleModalClick(event) {
+    const modalDialog = event.target.closest('.modal-dialog-auth');
+    const closeAuthButton = event.target.closest('.close-auth');
+    if (!modalDialog && !closeAuthButton && modalAuth.classList.contains('is-open')) {
+        closeModal();
+    }
+}
+
 buttonAuth.addEventListener('click', openModal);
 closeAuth.addEventListener('click', closeModal);
 logInForm.addEventListener('submit', logIn);
+modalAuth.addEventListener('click', handleModalClick);
 
 checkAuth();
